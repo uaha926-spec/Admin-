@@ -773,11 +773,17 @@
             });
         }
 
-        // === 7. Settings ===
+        // === 7. Settings (UPDATED WITH NEW CONTROLS) ===
         function renderSettings() {
-             database.ref('announcement').once('value').then(snap => {
-                const ann = snap.val() || {title: '', message: '', show: false};
+             Promise.all([
+                 database.ref('announcement').once('value'),
+                 database.ref('admin').once('value') // Fetch admin node for support/channel/marquee
+             ]).then(([annSnap, adminSnap]) => {
+                const ann = annSnap.val() || {title: '', message: '', show: false};
+                const adminData = adminSnap.val() || {};
+
                 const html = `
+                    <!-- 1. Global Announcement Popup -->
                     <div class="content-card" style="max-width: 600px;">
                         <h3 style="margin-top:0;">Global Announcement Popup</h3>
                         <div class="form-group">
@@ -795,7 +801,32 @@
                                 <option value="false" ${!ann.show ? 'selected' : ''}>Inactive (Hide)</option>
                             </select>
                         </div>
-                        <button class="btn-action btn-edit" style="width:100%; padding:12px; justify-content:center;" onclick="saveAnnouncement()"><span>Update Announcement</span></button>
+                        <button class="btn-action btn-edit" style="width:100%; padding:12px; justify-content:center;" onclick="saveAnnouncement()"><span>Update Popup</span></button>
+                    </div>
+
+                    <!-- 2. UI Controls (Marquee, Support, Channel) -->
+                    <div class="content-card" style="max-width: 600px;">
+                        <h3 style="margin-top:0;">Dashboard UI Controls</h3>
+                        
+                        <!-- Marquee Text -->
+                        <div class="form-group">
+                            <label>Scrolling Marquee Text</label>
+                            <input type="text" id="marquee-text" class="form-control" value="${adminData.marquee_text || ''}" placeholder="Welcome message...">
+                        </div>
+
+                        <!-- Support Number -->
+                        <div class="form-group">
+                            <label>Support Number (Format: 923xxxxxxxxx)</label>
+                            <input type="text" id="support-number" class="form-control" value="${adminData.support_number || ''}" placeholder="e.g. 923001234567">
+                        </div>
+
+                        <!-- Channel Link -->
+                        <div class="form-group">
+                            <label>Channel Link (URL)</label>
+                            <input type="text" id="channel-link" class="form-control" value="${adminData.channel_link || ''}" placeholder="https://whatsapp.com/channel/...">
+                        </div>
+
+                        <button class="btn-action btn-edit" style="width:100%; padding:12px; justify-content:center;" onclick="saveUIControls()"><span>Update UI</span></button>
                     </div>
                 `;
                 document.getElementById('content-area').innerHTML = html;
@@ -812,6 +843,22 @@
                 message: msg,
                 show: show
             }).then(() => showPopup('Updated', 'Announcement updated successfully.'));
+        }
+
+        function saveUIControls() {
+            const marquee = document.getElementById('marquee-text').value;
+            const support = document.getElementById('support-number').value;
+            const channel = document.getElementById('channel-link').value;
+
+            const updates = {
+                'admin/marquee_text': marquee,
+                'admin/support_number': support,
+                'admin/channel_link': channel
+            };
+
+            database.ref().update(updates)
+                .then(() => showPopup('Updated', 'UI Controls updated successfully.'))
+                .catch(err => showPopup('Error', err.message));
         }
 
         // === Popup System ===
