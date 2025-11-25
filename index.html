@@ -1,0 +1,846 @@
+<!-- START OF FILE admin.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProfitChain - Admin Control</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Professional Palette */
+            --primary: #4F46E5; /* Indigo */
+            --primary-hover: #4338ca;
+            --bg-body: #F3F4F6;
+            --bg-card: #FFFFFF;
+            --text-main: #111827;
+            --text-muted: #6B7280;
+            --border: #E5E7EB;
+            
+            /* Status Colors */
+            --success: #10B981;
+            --success-bg: #ECFDF5;
+            --danger: #EF4444;
+            --danger-bg: #FEF2F2;
+            --warning: #F59E0B;
+            --warning-bg: #FFFBEB;
+            
+            /* Layout */
+            --sidebar-width: 260px;
+        }
+
+        * { box-sizing: border-box; outline: none; }
+        body { font-family: 'Inter', sans-serif; margin: 0; background-color: var(--bg-body); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+
+        /* === Sidebar === */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--bg-card);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border);
+            transition: transform 0.3s ease;
+            z-index: 50;
+            flex-shrink: 0;
+        }
+        
+        .logo {
+            padding: 24px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+        .logo span { color: var(--primary); }
+        
+        .nav-links { list-style: none; padding: 16px; margin: 0; flex-grow: 1; overflow-y: auto; }
+        .nav-item {
+            padding: 12px 16px;
+            margin-bottom: 4px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s;
+        }
+        .nav-item:hover { background-color: #F9FAFB; color: var(--text-main); }
+        .nav-item.active { background-color: #EEF2FF; color: var(--primary); font-weight: 600; }
+        .nav-item svg { width: 20px; height: 20px; stroke-width: 2px; }
+
+        /* === Main Content === */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: var(--bg-card);
+            padding: 16px 32px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .page-title { font-size: 1.25rem; font-weight: 700; color: var(--text-main); margin: 0; }
+        
+        #content-area {
+            padding: 32px;
+            overflow-y: auto;
+            height: 100%;
+        }
+
+        /* === Search Bar === */
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .search-input {
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+            font-size: 0.9rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            transition: border-color 0.2s;
+        }
+        .search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+
+        /* === Cards === */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .stat-icon {
+            width: 48px; height: 48px;
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            font-size: 1.5rem;
+        }
+        .stat-info h4 { margin: 0; color: var(--text-muted); font-size: 0.875rem; font-weight: 500; }
+        .stat-info p { margin: 4px 0 0; font-size: 1.5rem; font-weight: 700; color: var(--text-main); }
+
+        .content-card {
+            background: var(--bg-card);
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            margin-bottom: 24px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* === Tables (Optimized for Visibility) === */
+        .table-wrapper { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; white-space: nowrap; }
+        
+        th { 
+            text-align: left; padding: 12px 16px; 
+            background: #F9FAFB; color: var(--text-muted); 
+            font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border);
+        }
+        td { padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--text-main); vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background-color: #F9FAFB; }
+        
+        .badge {
+            padding: 4px 10px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .badge.pending { background: var(--warning-bg); color: var(--warning); }
+        .badge.approved { background: var(--success-bg); color: var(--success); }
+        .badge.rejected { background: var(--danger-bg); color: var(--danger); }
+        .badge.used { background: #F3F4F6; color: #374151; }
+        .badge.active { background: var(--success-bg); color: var(--success); }
+        .badge.inactive { background: var(--danger-bg); color: var(--danger); }
+        .badge.expired { background: var(--danger-bg); color: var(--danger); }
+
+        /* === Buttons === */
+        .btn-group { display: flex; gap: 6px; }
+        .btn-action {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+        .btn-approve { background: var(--success); color: white; }
+        .btn-approve:hover { background: #059669; }
+        
+        .btn-reject { background: var(--danger); color: white; }
+        .btn-reject:hover { background: #DC2626; }
+        
+        .btn-edit { background: var(--primary); color: white; }
+        .btn-edit:hover { background: var(--primary-hover); }
+
+        /* === Popup === */
+        .popup-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4); z-index: 100;
+            display: none; justify-content: center; align-items: center;
+            backdrop-filter: blur(4px);
+        }
+        .popup-content {
+            background: white; width: 90%; max-width: 400px; padding: 30px;
+            border-radius: 16px; text-align: center;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            animation: scaleUp 0.2s ease;
+        }
+        @keyframes scaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .mobile-toggle { display: none; font-size: 1.5rem; cursor: pointer; background:none; border:none; }
+        
+        @media (max-width: 768px) {
+            .sidebar { position: fixed; left: -260px; height: 100vh; box-shadow: 10px 0 15px rgba(0,0,0,0.05); }
+            .sidebar.active { left: 0; }
+            .mobile-toggle { display: block; }
+            #content-area { padding: 16px; }
+            .header { padding: 16px; }
+            /* Compact buttons for mobile */
+            .btn-action span { display: none; } /* Hide text on mobile, show only color/icon implies action */
+            .btn-action { padding: 8px; }
+            .btn-action::after { content: ''; display: block; width: 16px; height: 16px; background-size: contain; background-repeat: no-repeat; background-position: center; }
+            .btn-approve::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E"); }
+            .btn-reject::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 17.59 13.41 12z'/%3E%3C/svg%3E"); }
+            .btn-edit::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z'/%3E%3C/svg%3E"); }
+        }
+        
+        /* Forms */
+        .form-group { margin-bottom: 16px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 0.9rem; font-weight: 600; color: var(--text-main); }
+        .form-control { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); }
+    </style>
+</head>
+<body>
+
+    <!-- App Interface (Always Visible) -->
+    <div id="app-interface" style="display: flex; width: 100%; height: 100%;">
+        
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zm0 9l2.5-1.25L12 8.5l-2.5 1.25L12 11zm0 2.5l-5-2.5-5 2.5L12 22l10-8.5-5-2.5-5 2.5z"/></svg>
+                <span>Profit</span>Chain
+            </div>
+            <ul class="nav-links">
+                <li class="nav-item active" onclick="showSection('dashboard')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg> Dashboard</li>
+                <li class="nav-item" onclick="showSection('users')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg> Users</li>
+                <!-- DEPOSIT SECTIONS -->
+                <li class="nav-item" onclick="showSection('deposit-jazzcash')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> JazzCash Deposits</li>
+                <li class="nav-item" onclick="showSection('deposit-easypaisa')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Easypaisa Deposits</li>
+                <!-- EXISTING SECTIONS -->
+                <li class="nav-item" onclick="showSection('pending-deposits')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> All Pending Deposits</li>
+                <li class="nav-item" onclick="showSection('pending-withdrawals')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg> Pending Withdrawals</li>
+                <li class="nav-item" onclick="showSection('history-deposits')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg> Deposit History</li>
+                <li class="nav-item" onclick="showSection('history-withdrawals')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg> Withdrawal History</li>
+                <li class="nav-item" onclick="showSection('products')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg> Products & Plans</li>
+                <li class="nav-item" onclick="showSection('redeem')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path></svg> Redeem Codes (Advanced)</li>
+                <li class="nav-item" onclick="showSection('settings')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> Settings</li>
+            </ul>
+        </aside>
+
+        <!-- Content -->
+        <main class="main-content">
+            <div class="header">
+                <button class="mobile-toggle" onclick="toggleSidebar()">☰</button>
+                <h2 class="page-title" id="page-title">Dashboard</h2>
+            </div>
+
+            <div id="content-area">
+                <!-- Content Injected via JS -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Popup Modal -->
+    <div id="popup-overlay" class="popup-overlay">
+        <div id="popup-content" class="popup-content">
+            <h3 id="popup-title" style="margin-top:0;">Title</h3>
+            <p id="popup-message" style="color: var(--text-muted); margin-bottom: 25px;">Message</p>
+            <div id="popup-buttons" style="display:flex; gap:10px; justify-content:center;"></div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        // === Firebase Config ===
+        const firebaseConfig = {
+            apiKey: "AIzaSyCkePiNEpcaD9hdRj5QjEEW-RxkMhkZaG4",
+            authDomain: "profit-d4cb1.firebaseapp.com",
+            databaseURL: "https://profit-d4cb1-default-rtdb.firebaseio.com",
+            projectId: "profit-d4cb1",
+            storageBucket: "profit-d4cb1.firebasestorage.app",
+            messagingSenderId: "302876186968",
+            appId: "1:302876186968:web:a67dd339215f885ae3ad2d"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Global Cache for Search
+        let cachedUsers = [];
+        let cachedDeposits = [];
+        
+        // Init on Load
+        window.onload = function() {
+            showSection('dashboard');
+        };
+
+        // === Navigation Logic ===
+        function showSection(sectionId) {
+            const titleMap = {
+                'dashboard': 'Admin Dashboard',
+                'users': 'User Management',
+                'deposit-jazzcash': 'JazzCash Deposits (Pending)',
+                'deposit-easypaisa': 'Easypaisa Deposits (Pending)',
+                'pending-deposits': 'All Pending Deposits',
+                'pending-withdrawals': 'Pending Withdrawals',
+                'history-deposits': 'All Deposit History',
+                'history-withdrawals': 'All Withdrawal History',
+                'products': 'Product & Plans',
+                'redeem': 'Redeem Codes Manager',
+                'settings': 'Settings'
+            };
+
+            document.getElementById('page-title').innerText = titleMap[sectionId];
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            const activeNav = document.querySelector(`.nav-item[onclick="showSection('${sectionId}')"]`);
+            if(activeNav) activeNav.classList.add('active');
+
+            const contentDiv = document.getElementById('content-area');
+            contentDiv.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-muted);">Loading data...</div>';
+
+            // Route to function
+            switch(sectionId) {
+                case 'dashboard': renderDashboard(); break;
+                case 'users': renderUsers(); break;
+                case 'deposit-jazzcash': renderDeposits(true, 'JazzCash'); break;
+                case 'deposit-easypaisa': renderDeposits(true, 'Easypaisa'); break;
+                case 'pending-deposits': renderDeposits(true, null); break;
+                case 'history-deposits': renderDeposits(false, null); break;
+                case 'pending-withdrawals': renderWithdrawals(true); break;
+                case 'history-withdrawals': renderWithdrawals(false); break;
+                case 'products': renderProducts(); break;
+                case 'redeem': renderRedeem(); break;
+                case 'settings': renderSettings(); break;
+            }
+
+            if(window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('active');
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+
+        // === 1. Dashboard ===
+        function renderDashboard() {
+            Promise.all([
+                database.ref('users').once('value'),
+                database.ref('deposits').orderByChild('status').equalTo('pending').once('value'),
+                database.ref('withdrawals').orderByChild('status').equalTo('pending').once('value')
+            ]).then(([usersSnap, depSnap, wdSnap]) => {
+                const totalUsers = usersSnap.numChildren();
+                const pendingDep = depSnap.numChildren();
+                const pendingWd = wdSnap.numChildren();
+
+                const content = `
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background:#EEF2FF; color:var(--primary);">👥</div>
+                            <div class="stat-info"><h4>Total Users</h4><p>${totalUsers}</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background:var(--warning-bg); color:var(--warning);">📥</div>
+                            <div class="stat-info"><h4>Pending Deposits</h4><p>${pendingDep}</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background:var(--danger-bg); color:var(--danger);">📤</div>
+                            <div class="stat-info"><h4>Pending Withdrawals</h4><p>${pendingWd}</p></div>
+                        </div>
+                    </div>
+                    <div class="content-card">
+                        <h3 style="margin-top:0;">Quick Actions</h3>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <button class="btn-action btn-edit" style="padding:10px 20px;" onclick="showSection('products')"><span>Edit Products</span></button>
+                            <button class="btn-action btn-approve" style="padding:10px 20px;" onclick="showSection('redeem')"><span>Create Code</span></button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('content-area').innerHTML = content;
+            });
+        }
+
+        // === 2. Users Management (With Search) ===
+        function renderUsers() {
+            database.ref('users').once('value', snapshot => {
+                cachedUsers = [];
+                snapshot.forEach(child => {
+                    cachedUsers.push({ key: child.key, ...child.val() });
+                });
+                // Render Search Input + Container
+                document.getElementById('content-area').innerHTML = `
+                    <div class="search-container">
+                        <input type="text" class="search-input" placeholder="Search by Name or Number..." onkeyup="filterUsers(this.value)">
+                    </div>
+                    <div id="users-table-container" class="content-card" style="padding:0; overflow:hidden;"></div>
+                `;
+                renderUsersTable(cachedUsers);
+            });
+        }
+
+        function filterUsers(query) {
+            const lowerQ = query.toLowerCase();
+            const filtered = cachedUsers.filter(u => 
+                (u.name && u.name.toLowerCase().includes(lowerQ)) || 
+                (u.number && u.number.includes(lowerQ))
+            );
+            renderUsersTable(filtered);
+        }
+
+        function renderUsersTable(users) {
+            let html = `<div class="table-wrapper"><table>
+                <thead><tr><th>Name</th><th>Number</th><th>Password</th><th>Wallet</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
+            
+            if (users.length === 0) html += `<tr><td colspan="6" style="text-align:center;">No users found.</td></tr>`;
+            
+            users.forEach(user => {
+                const statusBadge = user.isBanned ? '<span class="badge rejected">Banned</span>' : '<span class="badge approved">Active</span>';
+                html += `
+                    <tr>
+                        <td>${user.name}</td>
+                        <td>${user.number}</td>
+                        <td>${user.password}</td>
+                        <td>${user.wallet ? user.wallet.toFixed(2) : 0}</td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <div class="btn-group">
+                                <button class="btn-action btn-edit" title="Edit Balance" onclick="editUserBalance('${user.key}', ${user.wallet})"><span>Edit</span></button>
+                                <button class="btn-action ${user.isBanned ? 'btn-approve' : 'btn-reject'}" title="${user.isBanned ? 'Unban' : 'Ban'}" onclick="toggleBan('${user.key}', ${user.isBanned})"><span>${user.isBanned ? 'Unban' : 'Ban'}</span></button>
+                            </div>
+                        </td>
+                    </tr>`;
+            });
+            html += `</tbody></table></div>`;
+            document.getElementById('users-table-container').innerHTML = html;
+        }
+
+        function editUserBalance(uid, currentBalance) {
+            const newBal = prompt("Enter new wallet balance:", currentBalance);
+            if(newBal !== null && !isNaN(newBal)) {
+                database.ref('users/' + uid + '/wallet').set(parseFloat(newBal))
+                .then(() => showPopup('Success', 'User balance updated.'))
+                .catch(e => showPopup('Error', e.message));
+                renderUsers();
+            }
+        }
+
+        function toggleBan(uid, isBanned) {
+            database.ref('users/' + uid + '/isBanned').set(!isBanned)
+            .then(() => {
+                renderUsers();
+            });
+        }
+
+        // === 3. Deposits Logic (With Method Filter) ===
+        function renderDeposits(isPending, methodFilter) {
+            let ref = database.ref('deposits');
+            if(isPending) {
+                ref = ref.orderByChild('status').equalTo('pending');
+            }
+            
+            ref.once('value', snapshot => {
+                cachedDeposits = [];
+                snapshot.forEach(c => cachedDeposits.push({k: c.key, ...c.val()}));
+                
+                if(!isPending) {
+                    cachedDeposits = cachedDeposits.filter(d => d.status !== 'pending');
+                }
+                
+                // Apply Method Filter (JazzCash / Easypaisa) if requested
+                if (methodFilter) {
+                    cachedDeposits = cachedDeposits.filter(d => d.method === methodFilter);
+                }
+
+                cachedDeposits.reverse(); // Newest first
+
+                let searchHTML = isPending ? `
+                    <div class="search-container">
+                        <input type="text" class="search-input" placeholder="Search TRX ID..." onkeyup="filterDeposits(this.value, ${isPending}, '${methodFilter}')">
+                    </div>` : '';
+
+                document.getElementById('content-area').innerHTML = `
+                    ${searchHTML}
+                    <div id="deposits-table-container" class="content-card" style="padding:0; overflow:hidden;"></div>
+                `;
+                renderDepositsTable(cachedDeposits, isPending, methodFilter);
+            });
+        }
+
+        function filterDeposits(query, isPending, methodFilter) {
+            const lowerQ = query.toLowerCase();
+            const filtered = cachedDeposits.filter(d => d.trxId && d.trxId.toLowerCase().includes(lowerQ));
+            renderDepositsTable(filtered, isPending, methodFilter);
+        }
+
+        function renderDepositsTable(list, isPending, methodFilter) {
+            let html = `<div class="table-wrapper"><table>
+                <thead><tr><th>User Number</th><th>Amount</th><th>Method</th><th>TRX ID</th><th>Time</th><th>Status</th>${isPending?'<th>Actions</th>':''}</tr></thead><tbody>`;
+            
+            if(list.length === 0) html += `<tr><td colspan="7" style="text-align:center;">No records found.</td></tr>`;
+
+            list.forEach(d => {
+                const methodDisplay = d.method ? d.method : 'Easypaisa'; // Fallback if old data
+                html += `
+                <tr>
+                    <td>${d.userNumber}</td>
+                    <td>${d.amount}</td>
+                    <td><span style="font-weight:600; color: var(--primary);">${methodDisplay}</span></td>
+                    <td>${d.trxId}</td>
+                    <td>${new Date(d.timestamp).toLocaleString()}</td>
+                    <td><span class="badge ${d.status}">${d.status}</span></td>
+                    ${isPending ? `<td>
+                        <div class="btn-group">
+                            <button class="btn-action btn-approve" title="Approve" onclick="handleDeposit('${d.k}', '${d.userId}', ${d.amount}, 'approve', ${isPending}, '${methodFilter}')"><span>Approve</span></button>
+                            <button class="btn-action btn-reject" title="Reject" onclick="handleDeposit('${d.k}', '${d.userId}', ${d.amount}, 'reject', ${isPending}, '${methodFilter}')"><span>Reject</span></button>
+                        </div>
+                    </td>` : ''}
+                </tr>`;
+            });
+            html += `</tbody></table></div>`;
+            document.getElementById('deposits-table-container').innerHTML = html;
+        }
+
+        function handleDeposit(key, uid, amount, action, isPending, methodFilter) {
+            showPopup('Confirm', `Are you sure you want to ${action} this deposit?`, true, () => {
+                const updates = {};
+                updates[`deposits/${key}/status`] = action === 'approve' ? 'approved' : 'rejected';
+                if (action === 'approve') {
+                    updates[`users/${uid}/wallet`] = firebase.database.ServerValue.increment(amount);
+                    updates[`users/${uid}/successfulReferralDeposits`] = firebase.database.ServerValue.increment(1);
+                }
+                database.ref().update(updates).then(() => {
+                    renderDeposits(isPending, methodFilter);
+                });
+            });
+        }
+
+        // === 4. Withdrawals Logic ===
+        function renderWithdrawals(isPending) {
+            let ref = database.ref('withdrawals');
+            if(isPending) {
+                ref = ref.orderByChild('status').equalTo('pending');
+            }
+
+            ref.once('value', snapshot => {
+                let list = [];
+                snapshot.forEach(c => list.push({k: c.key, ...c.val()}));
+                
+                if(!isPending) {
+                    list = list.filter(w => w.status !== 'pending');
+                }
+                
+                list.reverse();
+
+                document.getElementById('content-area').innerHTML = `<div id="withdrawals-table-container" class="content-card" style="padding:0; overflow:hidden;"></div>`;
+                
+                let html = `<div class="table-wrapper"><table>
+                    <thead><tr><th>User</th><th>Net Amt</th><th>Account</th><th>Details</th><th>Status</th>${isPending?'<th>Actions</th>':''}</tr></thead><tbody>`;
+                
+                if(list.length === 0) html += `<tr><td colspan="6" style="text-align:center;">No records found.</td></tr>`;
+
+                list.forEach(w => {
+                    html += `
+                    <tr>
+                        <td>${w.userNumber}</td>
+                        <td><b style="color:var(--primary)">${w.netAmount.toFixed(0)}</b> <small>(Req:${w.amount})</small></td>
+                        <td>${w.accountType}</td>
+                        <td>${w.name}<br><small>${w.accountNumber}</small></td>
+                        <td><span class="badge ${w.status}">${w.status}</span></td>
+                        ${isPending ? `<td>
+                            <div class="btn-group">
+                                <button class="btn-action btn-approve" title="Approve" onclick="handleWithdrawal('${w.k}', '${w.userId}', ${w.amount}, 'approve')"><span>Approve</span></button>
+                                <button class="btn-action btn-reject" title="Reject" onclick="handleWithdrawal('${w.k}', '${w.userId}', ${w.amount}, 'reject')"><span>Reject</span></button>
+                            </div>
+                        </td>` : ''}
+                    </tr>`;
+                });
+                html += `</tbody></table></div>`;
+                document.getElementById('withdrawals-table-container').innerHTML = html;
+            });
+        }
+
+        function handleWithdrawal(key, uid, amount, action) {
+             showPopup('Confirm', `Are you sure you want to ${action} this withdrawal?`, true, () => {
+                const updates = {};
+                updates[`withdrawals/${key}/status`] = action === 'approve' ? 'approved' : 'rejected';
+                if (action === 'reject') {
+                    updates[`users/${uid}/wallet`] = firebase.database.ServerValue.increment(amount);
+                }
+                database.ref().update(updates).then(() => {
+                    renderWithdrawals(true);
+                });
+             });
+        }
+
+        // === 5. Products Management ===
+        function renderProducts() {
+             database.ref('products').once('value', snapshot => {
+                let html = `<div class="content-card" style="padding:0; overflow:hidden;">
+                    <div style="padding:20px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border);">
+                        <h3 style="margin:0;">Current Plans</h3>
+                        <button class="btn-action btn-edit" style="padding:8px 16px;" onclick="addProduct()"><span>+ Add Plan</span></button>
+                    </div>
+                    <div class="table-wrapper" style="border:none;"><table><thead><tr><th>Price</th><th>Daily Profit</th><th>Cycle</th><th>Actions</th></tr></thead><tbody>`;
+                
+                const products = snapshot.val() || [];
+                products.forEach((p, index) => {
+                    if(!p) return;
+                    html += `
+                        <tr>
+                            <td>${p.price}</td>
+                            <td>${p.dailyProfit}</td>
+                            <td>${p.cycle} days</td>
+                            <td>
+                                <button class="btn-action btn-reject" title="Delete" onclick="deleteProduct(${index})"><span>Delete</span></button>
+                            </td>
+                        </tr>`;
+                });
+                html += `</tbody></table></div></div>`;
+                document.getElementById('content-area').innerHTML = html;
+             });
+        }
+
+        function addProduct() {
+            const price = prompt("Enter Plan Price:");
+            if(!price) return;
+            const profit = prompt("Enter Daily Profit:");
+            const cycle = prompt("Enter Cycle Days:");
+            const id = Math.floor(Math.random() * 1000);
+
+            if(profit && cycle) {
+                database.ref('products').get().then(snap => {
+                    let products = snap.val() || [];
+                    products.push({ id: parseInt(id), price: parseInt(price), dailyProfit: parseFloat(profit), cycle: parseInt(cycle) });
+                    database.ref('products').set(products);
+                    renderProducts();
+                });
+            }
+        }
+
+        function deleteProduct(index) {
+             showPopup('Delete?', 'This will remove the plan for new users.', true, () => {
+                database.ref(`products/${index}`).remove().then(() => {
+                    renderProducts();
+                });
+             });
+        }
+
+        // === 6. Advanced Redeem Codes Logic ===
+        function renderRedeem() {
+            database.ref('redeemCodes').once('value', snapshot => {
+                let html = `
+                <div class="content-card">
+                    <h3 style="margin-top:0;">Generate Advanced Code</h3>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <input type="number" id="code-amount" class="form-control" placeholder="Amount (PKR)" style="flex:1; min-width:120px;">
+                        <input type="number" id="code-limit" class="form-control" placeholder="Max Users (e.g. 50)" style="flex:1; min-width:120px;">
+                        <input type="number" id="code-hours" class="form-control" placeholder="Expire Hours (e.g. 24)" style="flex:1; min-width:120px;">
+                        <button class="btn-action btn-edit" style="width:150px;" onclick="generateCode()"><span>Generate</span></button>
+                    </div>
+                </div>
+                <div class="content-card" style="padding:0; overflow:hidden;">
+                    <div style="padding:16px; border-bottom:1px solid var(--border); font-weight:600;">Active Codes</div>
+                    <div class="table-wrapper" style="border:none;"><table><thead><tr><th>Code</th><th>Amount</th><th>Usage</th><th>Expires In</th><th>Status</th><th>Action</th></tr></thead><tbody>`;
+                
+                if(snapshot.exists()) {
+                    snapshot.forEach(child => {
+                        const code = child.key;
+                        const data = child.val();
+                        
+                        // Calculate Expiry Status
+                        const now = new Date().getTime();
+                        const expiresAt = new Date(data.expiresAt).getTime();
+                        const isExpired = now > expiresAt;
+                        
+                        // Calculate Time Remaining
+                        let timeLeft = "Expired";
+                        if (!isExpired) {
+                            const diff = expiresAt - now;
+                            const h = Math.floor(diff / (1000 * 60 * 60));
+                            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                            timeLeft = `${h}h ${m}m`;
+                        }
+
+                        // Determine Badge
+                        let statusBadge = '';
+                        if (data.status === 'inactive') statusBadge = '<span class="badge inactive">Stopped</span>';
+                        else if (isExpired) statusBadge = '<span class="badge expired">Expired</span>';
+                        else if (data.usedCount >= data.maxUsers) statusBadge = '<span class="badge used">Full</span>';
+                        else statusBadge = '<span class="badge active">Active</span>';
+
+                        html += `<tr>
+                            <td><b style="letter-spacing:1px; font-family:monospace;">${code}</b></td>
+                            <td>${data.amount}</td>
+                            <td>${data.usedCount || 0} / ${data.maxUsers}</td>
+                            <td>${timeLeft}</td>
+                            <td>${statusBadge}</td>
+                            <td>${(data.status === 'active' && !isExpired && data.usedCount < data.maxUsers) ? `<button class="btn-action btn-reject" title="Deactivate" onclick="deleteCode('${code}')"><span>Stop</span></button>` : '-'}</td>
+                        </tr>`;
+                    });
+                }
+                html += '</tbody></table></div></div>';
+                document.getElementById('content-area').innerHTML = html;
+            });
+        }
+
+        function generateCode() {
+            const amount = parseInt(document.getElementById('code-amount').value);
+            const limit = parseInt(document.getElementById('code-limit').value);
+            const hours = parseInt(document.getElementById('code-hours').value);
+
+            if(!amount || !limit || !hours) return showPopup('Error', 'Please fill all fields (Amount, Limit, Hours).');
+
+            const code = 'GIFT-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+            
+            // Calculate Expiry Timestamp
+            const now = new Date();
+            now.setHours(now.getHours() + hours);
+            const expiresAt = now.toISOString();
+
+            database.ref('redeemCodes/' + code).set({
+                amount: amount,
+                maxUsers: limit,
+                usedCount: 0,
+                expiresAt: expiresAt,
+                status: 'active',
+                createdAt: new Date().toISOString()
+            }).then(() => {
+                showPopup('Generated', `Code: ${code} (Limit: ${limit}, Valid: ${hours}h)`);
+                renderRedeem();
+            });
+        }
+        
+        function deleteCode(code) {
+            database.ref(`redeemCodes/${code}/status`).set('inactive').then(() => renderRedeem());
+        }
+
+        // === 7. Settings ===
+        function renderSettings() {
+             database.ref('announcement').once('value').then(snap => {
+                const ann = snap.val() || {title: '', message: '', show: false};
+                const html = `
+                    <div class="content-card" style="max-width: 600px;">
+                        <h3 style="margin-top:0;">Global Announcement Popup</h3>
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input type="text" id="ann-title" class="form-control" value="${ann.title || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label>Message</label>
+                            <textarea id="ann-msg" class="form-control" rows="4">${ann.message || ''}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select id="ann-show" class="form-control">
+                                <option value="true" ${ann.show ? 'selected' : ''}>Active (Show Popup)</option>
+                                <option value="false" ${!ann.show ? 'selected' : ''}>Inactive (Hide)</option>
+                            </select>
+                        </div>
+                        <button class="btn-action btn-edit" style="width:100%; padding:12px; justify-content:center;" onclick="saveAnnouncement()"><span>Update Announcement</span></button>
+                    </div>
+                `;
+                document.getElementById('content-area').innerHTML = html;
+             });
+        }
+
+        function saveAnnouncement() {
+            const title = document.getElementById('ann-title').value;
+            const message = document.getElementById('ann-msg').value;
+            const show = document.getElementById('ann-show').value === 'true';
+
+            database.ref('announcement').set({
+                title: title,
+                message: message,
+                show: show
+            }).then(() => showPopup('Saved', 'Announcement updated successfully.'));
+        }
+
+        // === Popup System ===
+        function showPopup(title, message, confirm = false, onConfirmCallback = null) {
+            const overlay = document.getElementById('popup-overlay');
+            document.getElementById('popup-title').innerText = title;
+            document.getElementById('popup-message').innerText = message;
+            const btnGroup = document.getElementById('popup-buttons');
+
+            btnGroup.innerHTML = '';
+            if (confirm) {
+                const yesBtn = document.createElement('button');
+                yesBtn.innerText = 'Confirm';
+                yesBtn.className = 'btn-action btn-approve';
+                yesBtn.style.padding = "8px 20px";
+                yesBtn.onclick = () => { overlay.style.display = 'none'; if(onConfirmCallback) onConfirmCallback(); };
+
+                const noBtn = document.createElement('button');
+                noBtn.innerText = 'Cancel';
+                noBtn.className = 'btn-action';
+                noBtn.style.padding = "8px 20px";
+                noBtn.style.background = "#E5E7EB"; noBtn.style.color = "#374151";
+                noBtn.onclick = () => { overlay.style.display = 'none'; };
+
+                btnGroup.appendChild(noBtn);
+                btnGroup.appendChild(yesBtn);
+            } else {
+                const okBtn = document.createElement('button');
+                okBtn.innerText = 'Okay';
+                okBtn.className = 'btn-action btn-edit';
+                okBtn.style.padding = "8px 20px";
+                okBtn.onclick = () => { overlay.style.display = 'none'; };
+                btnGroup.appendChild(okBtn);
+            }
+
+            overlay.style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
