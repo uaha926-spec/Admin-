@@ -1,4 +1,4 @@
-<!-- START OF FILE admin.html -->
+<!-- START OF FILE -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -185,7 +185,6 @@
         .badge.used { background: #F3F4F6; color: #374151; }
         .badge.active { background: var(--success-bg); color: var(--success); }
         .badge.inactive { background: var(--danger-bg); color: var(--danger); }
-        .badge.expired { background: var(--danger-bg); color: var(--danger); }
 
         /* === Buttons === */
         .btn-group { display: flex; gap: 6px; }
@@ -264,7 +263,7 @@
             <ul class="nav-links">
                 <li class="nav-item active" onclick="showSection('dashboard')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg> Dashboard</li>
                 <li class="nav-item" onclick="showSection('users')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg> Users</li>
-                <!-- DEPOSIT SECTIONS -->
+                <!-- NEW DEPOSIT SECTIONS -->
                 <li class="nav-item" onclick="showSection('deposit-jazzcash')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> JazzCash Deposits</li>
                 <li class="nav-item" onclick="showSection('deposit-easypaisa')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Easypaisa Deposits</li>
                 <!-- EXISTING SECTIONS -->
@@ -273,7 +272,9 @@
                 <li class="nav-item" onclick="showSection('history-deposits')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg> Deposit History</li>
                 <li class="nav-item" onclick="showSection('history-withdrawals')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg> Withdrawal History</li>
                 <li class="nav-item" onclick="showSection('products')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg> Products & Plans</li>
-                <li class="nav-item" onclick="showSection('redeem')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path></svg> Redeem Codes (Advanced)</li>
+                <li class="nav-item" onclick="showSection('redeem')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path></svg> Redeem Codes</li>
+                <!-- NEW DEPOSIT ACCOUNTS SETTINGS -->
+                <li class="nav-item" onclick="showSection('deposit-settings')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg> Deposit Accounts</li>
                 <li class="nav-item" onclick="showSection('settings')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> Settings</li>
             </ul>
         </aside>
@@ -339,7 +340,8 @@
                 'history-deposits': 'All Deposit History',
                 'history-withdrawals': 'All Withdrawal History',
                 'products': 'Product & Plans',
-                'redeem': 'Redeem Codes Manager',
+                'redeem': 'Redeem Codes',
+                'deposit-settings': 'Manage Deposit Accounts', // Added Title
                 'settings': 'Settings'
             };
 
@@ -363,6 +365,7 @@
                 case 'history-withdrawals': renderWithdrawals(false); break;
                 case 'products': renderProducts(); break;
                 case 'redeem': renderRedeem(); break;
+                case 'deposit-settings': renderDepositSettings(); break; // Added Route
                 case 'settings': renderSettings(); break;
             }
 
@@ -520,6 +523,7 @@
         function filterDeposits(query, isPending, methodFilter) {
             const lowerQ = query.toLowerCase();
             const filtered = cachedDeposits.filter(d => d.trxId && d.trxId.toLowerCase().includes(lowerQ));
+            // The cachedDeposits array is already filtered by method and status in renderDeposits, so just filtering by search text is enough here.
             renderDepositsTable(filtered, isPending, methodFilter);
         }
 
@@ -565,7 +569,7 @@
             });
         }
 
-        // === 4. Withdrawals Logic ===
+        // === 4. Withdrawals Logic (Fix for History) ===
         function renderWithdrawals(isPending) {
             let ref = database.ref('withdrawals');
             if(isPending) {
@@ -577,6 +581,7 @@
                 snapshot.forEach(c => list.push({k: c.key, ...c.val()}));
                 
                 if(!isPending) {
+                    // Show Approved/Rejected in history
                     list = list.filter(w => w.status !== 'pending');
                 }
                 
@@ -676,56 +681,30 @@
              });
         }
 
-        // === 6. Advanced Redeem Codes Logic ===
+        // === 6. Redeem Codes ===
         function renderRedeem() {
             database.ref('redeemCodes').once('value', snapshot => {
                 let html = `
                 <div class="content-card">
-                    <h3 style="margin-top:0;">Generate Advanced Code</h3>
-                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                        <input type="number" id="code-amount" class="form-control" placeholder="Amount (PKR)" style="flex:1; min-width:120px;">
-                        <input type="number" id="code-limit" class="form-control" placeholder="Max Users (e.g. 50)" style="flex:1; min-width:120px;">
-                        <input type="number" id="code-hours" class="form-control" placeholder="Expire Hours (e.g. 24)" style="flex:1; min-width:120px;">
+                    <h3 style="margin-top:0;">Generate Code</h3>
+                    <div style="display:flex; gap:10px;">
+                        <input type="number" id="code-amount" class="form-control" placeholder="Amount (PKR)">
                         <button class="btn-action btn-edit" style="width:150px;" onclick="generateCode()"><span>Generate</span></button>
                     </div>
                 </div>
                 <div class="content-card" style="padding:0; overflow:hidden;">
                     <div style="padding:16px; border-bottom:1px solid var(--border); font-weight:600;">Active Codes</div>
-                    <div class="table-wrapper" style="border:none;"><table><thead><tr><th>Code</th><th>Amount</th><th>Usage</th><th>Expires In</th><th>Status</th><th>Action</th></tr></thead><tbody>`;
+                    <div class="table-wrapper" style="border:none;"><table><thead><tr><th>Code</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead><tbody>`;
                 
                 if(snapshot.exists()) {
                     snapshot.forEach(child => {
                         const code = child.key;
                         const data = child.val();
-                        
-                        // Calculate Expiry Status
-                        const now = new Date().getTime();
-                        const expiresAt = new Date(data.expiresAt).getTime();
-                        const isExpired = now > expiresAt;
-                        
-                        // Calculate Time Remaining
-                        let timeLeft = "Expired";
-                        if (!isExpired) {
-                            const diff = expiresAt - now;
-                            const h = Math.floor(diff / (1000 * 60 * 60));
-                            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                            timeLeft = `${h}h ${m}m`;
-                        }
-
-                        // Determine Badge
-                        let statusBadge = '';
-                        if (data.status === 'inactive') statusBadge = '<span class="badge inactive">Stopped</span>';
-                        else if (isExpired) statusBadge = '<span class="badge expired">Expired</span>';
-                        else if (data.usedCount >= data.maxUsers) statusBadge = '<span class="badge used">Full</span>';
-                        else statusBadge = '<span class="badge active">Active</span>';
-
                         html += `<tr>
                             <td><b style="letter-spacing:1px; font-family:monospace;">${code}</b></td>
                             <td>${data.amount}</td>
-                            <td>${data.usedCount || 0} / ${data.maxUsers}</td>
-                            <td>${timeLeft}</td>
-                            <td>${statusBadge}</td>
-                            <td>${(data.status === 'active' && !isExpired && data.usedCount < data.maxUsers) ? `<button class="btn-action btn-reject" title="Deactivate" onclick="deleteCode('${code}')"><span>Stop</span></button>` : '-'}</td>
+                            <td><span class="badge ${data.status === 'used' ? 'used' : (data.status === 'inactive' ? 'inactive' : 'active')}">${data.status}</span></td>
+                            <td>${data.status === 'active' ? `<button class="btn-action btn-reject" title="Deactivate" onclick="deleteCode('${code}')"><span>Stop</span></button>` : '-'}</td>
                         </tr>`;
                     });
                 }
@@ -735,34 +714,63 @@
         }
 
         function generateCode() {
-            const amount = parseInt(document.getElementById('code-amount').value);
-            const limit = parseInt(document.getElementById('code-limit').value);
-            const hours = parseInt(document.getElementById('code-hours').value);
-
-            if(!amount || !limit || !hours) return showPopup('Error', 'Please fill all fields (Amount, Limit, Hours).');
-
+            const amount = document.getElementById('code-amount').value;
+            if(!amount) return;
             const code = 'GIFT-' + Math.random().toString(36).substr(2, 6).toUpperCase();
-            
-            // Calculate Expiry Timestamp
-            const now = new Date();
-            now.setHours(now.getHours() + hours);
-            const expiresAt = now.toISOString();
-
             database.ref('redeemCodes/' + code).set({
-                amount: amount,
-                maxUsers: limit,
-                usedCount: 0,
-                expiresAt: expiresAt,
+                amount: parseInt(amount),
                 status: 'active',
                 createdAt: new Date().toISOString()
             }).then(() => {
-                showPopup('Generated', `Code: ${code} (Limit: ${limit}, Valid: ${hours}h)`);
+                showPopup('Generated', `Code: ${code}`);
                 renderRedeem();
             });
         }
         
         function deleteCode(code) {
             database.ref(`redeemCodes/${code}/status`).set('inactive').then(() => renderRedeem());
+        }
+
+        // === NEW FUNCTION: DEPOSIT SETTINGS ===
+        function renderDepositSettings() {
+             database.ref('admin/deposit_accounts').once('value').then(snap => {
+                const data = snap.val() || { easypaisa: '', jazzcash: '' };
+                const html = `
+                    <div class="content-card" style="max-width: 600px;">
+                        <h3 style="margin-top:0;">Manage Deposit Accounts</h3>
+                        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:20px;">
+                            Enter the account numbers that will be displayed to users in the Deposit section.
+                        </p>
+                        
+                        <div class="form-group">
+                            <label>Easypaisa Number</label>
+                            <input type="text" id="admin-ep-number" class="form-control" value="${data.easypaisa || ''}" placeholder="e.g. 0344xxxxxxx">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>JazzCash Number</label>
+                            <input type="text" id="admin-jc-number" class="form-control" value="${data.jazzcash || ''}" placeholder="e.g. 0300xxxxxxx">
+                        </div>
+                        
+                        <button class="btn-action btn-edit" style="width:100%; padding:12px; justify-content:center;" onclick="saveDepositSettings()"><span>Save Numbers</span></button>
+                    </div>
+                `;
+                document.getElementById('content-area').innerHTML = html;
+             });
+        }
+
+        function saveDepositSettings() {
+            const ep = document.getElementById('admin-ep-number').value.trim();
+            const jc = document.getElementById('admin-jc-number').value.trim();
+            
+            database.ref('admin/deposit_accounts').set({
+                easypaisa: ep,
+                jazzcash: jc
+            }).then(() => {
+                showPopup('Success', 'Deposit account numbers updated successfully.');
+            }).catch(error => {
+                showPopup('Error', error.message);
+            });
         }
 
         // === 7. Settings ===
@@ -793,17 +801,17 @@
                 document.getElementById('content-area').innerHTML = html;
              });
         }
-
+        
         function saveAnnouncement() {
             const title = document.getElementById('ann-title').value;
-            const message = document.getElementById('ann-msg').value;
+            const msg = document.getElementById('ann-msg').value;
             const show = document.getElementById('ann-show').value === 'true';
-
+            
             database.ref('announcement').set({
                 title: title,
-                message: message,
+                message: msg,
                 show: show
-            }).then(() => showPopup('Saved', 'Announcement updated successfully.'));
+            }).then(() => showPopup('Updated', 'Announcement updated successfully.'));
         }
 
         // === Popup System ===
@@ -844,3 +852,4 @@
     </script>
 </body>
 </html>
+<!-- END OF FILE -->
