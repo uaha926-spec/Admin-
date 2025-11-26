@@ -137,7 +137,10 @@
             align-items: center;
             gap: 16px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
         }
+        .stat-card:hover { transform: translateY(-2px); }
+
         .stat-icon {
             width: 48px; height: 48px;
             border-radius: 10px;
@@ -155,7 +158,7 @@
             border: 1px solid var(--border);
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             margin-bottom: 24px;
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn 0.4s ease-out;
         }
 
         /* === Tables (Optimized for Visibility) === */
@@ -170,7 +173,7 @@
         }
         td { padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--text-main); vertical-align: middle; }
         tr:last-child td { border-bottom: none; }
-        tr:hover td { background-color: #F9FAFB; }
+        tr:hover td { background-color: #F9FAFB; transition: background-color 0.2s; }
         
         .badge {
             padding: 4px 10px;
@@ -201,6 +204,9 @@
             justify-content: center;
             gap: 4px;
         }
+        .btn-action:hover { transform: scale(1.05); }
+        .btn-action:active { transform: scale(0.95); }
+
         .btn-approve { background: var(--success); color: white; }
         .btn-approve:hover { background: #059669; }
         
@@ -210,6 +216,23 @@
         .btn-edit { background: var(--primary); color: white; }
         .btn-edit:hover { background: var(--primary-hover); }
 
+        .btn-clear { background: #EF4444; color: white; margin-left: auto; display: flex; align-items: center; gap: 5px; box-shadow: 0 2px 5px rgba(239, 68, 68, 0.3); }
+        .btn-clear:hover { background: #DC2626; }
+
+        /* === Copy Feature Styles === */
+        .account-wrapper { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+        .copy-trigger {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: #EEF2FF; color: var(--primary);
+            padding: 2px 8px; border-radius: 4px;
+            font-size: 0.75rem; font-weight: 600;
+            cursor: pointer; transition: all 0.2s;
+            border: 1px solid #E0E7FF;
+        }
+        .copy-trigger:hover { background: var(--primary); color: white; border-color: var(--primary); }
+        .copy-trigger svg { width: 14px; height: 14px; }
+        .copy-success { color: var(--success); font-weight: bold; font-size: 0.85rem; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 4px; }
+        
         /* === Popup === */
         .popup-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -225,6 +248,7 @@
         }
         @keyframes scaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
         .mobile-toggle { display: none; font-size: 1.5rem; cursor: pointer; background:none; border:none; }
         
@@ -485,7 +509,7 @@
             });
         }
 
-        // === 3. Deposits Logic (With Method Filter) ===
+        // === 3. Deposits Logic (With Method Filter & Clear History) ===
         function renderDeposits(isPending, methodFilter) {
             let ref = database.ref('deposits');
             if(isPending) {
@@ -507,13 +531,22 @@
 
                 cachedDeposits.reverse(); // Newest first
 
-                let searchHTML = isPending ? `
-                    <div class="search-container">
+                let topControls = '';
+                if(isPending) {
+                   topControls = `<input type="text" class="search-input" placeholder="Search TRX ID..." onkeyup="filterDeposits(this.value, ${isPending}, '${methodFilter}')">`;
+                } else {
+                    // HISTORY MODE -> Show Clear Button
+                    topControls = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
                         <input type="text" class="search-input" placeholder="Search TRX ID..." onkeyup="filterDeposits(this.value, ${isPending}, '${methodFilter}')">
-                    </div>` : '';
+                        <button class="btn-action btn-clear" style="padding:10px 20px;" onclick="clearHistory('deposits')">
+                            <span>🗑 Clear History</span>
+                        </button>
+                    </div>`;
+                }
 
                 document.getElementById('content-area').innerHTML = `
-                    ${searchHTML}
+                    <div class="search-container">${topControls}</div>
                     <div id="deposits-table-container" class="content-card" style="padding:0; overflow:hidden;"></div>
                 `;
                 renderDepositsTable(cachedDeposits, isPending, methodFilter);
@@ -523,7 +556,6 @@
         function filterDeposits(query, isPending, methodFilter) {
             const lowerQ = query.toLowerCase();
             const filtered = cachedDeposits.filter(d => d.trxId && d.trxId.toLowerCase().includes(lowerQ));
-            // The cachedDeposits array is already filtered by method and status in renderDeposits, so just filtering by search text is enough here.
             renderDepositsTable(filtered, isPending, methodFilter);
         }
 
@@ -534,7 +566,7 @@
             if(list.length === 0) html += `<tr><td colspan="7" style="text-align:center;">No records found.</td></tr>`;
 
             list.forEach(d => {
-                const methodDisplay = d.method ? d.method : 'Easypaisa'; // Fallback if old data
+                const methodDisplay = d.method ? d.method : 'Easypaisa'; 
                 html += `
                 <tr>
                     <td>${d.userNumber}</td>
@@ -569,7 +601,7 @@
             });
         }
 
-        // === 4. Withdrawals Logic (Fix for History) ===
+        // === 4. Withdrawals Logic (Copy Feature + Clear History) ===
         function renderWithdrawals(isPending) {
             let ref = database.ref('withdrawals');
             if(isPending) {
@@ -587,7 +619,21 @@
                 
                 list.reverse();
 
-                document.getElementById('content-area').innerHTML = `<div id="withdrawals-table-container" class="content-card" style="padding:0; overflow:hidden;"></div>`;
+                // Add Clear History button if not pending
+                let headerHTML = '';
+                if(!isPending) {
+                    headerHTML = `
+                    <div style="display:flex; justify-content:flex-end; margin-bottom:20px;">
+                        <button class="btn-action btn-clear" style="padding:10px 20px;" onclick="clearHistory('withdrawals')">
+                            <span>🗑 Clear History</span>
+                        </button>
+                    </div>`;
+                }
+
+                document.getElementById('content-area').innerHTML = `
+                    ${headerHTML}
+                    <div id="withdrawals-table-container" class="content-card" style="padding:0; overflow:hidden;"></div>
+                `;
                 
                 let html = `<div class="table-wrapper"><table>
                     <thead><tr><th>User</th><th>Net Amt</th><th>Account</th><th>Details</th><th>Status</th>${isPending?'<th>Actions</th>':''}</tr></thead><tbody>`;
@@ -595,12 +641,28 @@
                 if(list.length === 0) html += `<tr><td colspan="6" style="text-align:center;">No records found.</td></tr>`;
 
                 list.forEach(w => {
+                    // COPY FEATURE LOGIC
+                    let detailsHTML = `${w.name}<br><small>${w.accountNumber}</small>`;
+                    
+                    if(isPending) {
+                        const copyId = `copy-${w.k}`;
+                        detailsHTML = `
+                        <div class="account-wrapper">
+                            <span>${w.name}</span>
+                            <small id="${copyId}-text">${w.accountNumber}</small>
+                            <div id="${copyId}" class="copy-trigger" onclick="copyText('${w.accountNumber}', '${copyId}')">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                <span>Copy</span>
+                            </div>
+                        </div>`;
+                    }
+
                     html += `
                     <tr>
                         <td>${w.userNumber}</td>
                         <td><b style="color:var(--primary)">${w.netAmount.toFixed(0)}</b> <small>(Req:${w.amount})</small></td>
                         <td>${w.accountType}</td>
-                        <td>${w.name}<br><small>${w.accountNumber}</small></td>
+                        <td>${detailsHTML}</td>
                         <td><span class="badge ${w.status}">${w.status}</span></td>
                         ${isPending ? `<td>
                             <div class="btn-group">
@@ -612,6 +674,49 @@
                 });
                 html += `</tbody></table></div>`;
                 document.getElementById('withdrawals-table-container').innerHTML = html;
+            });
+        }
+
+        // === COPY TO CLIPBOARD FUNCTION ===
+        function copyText(text, elementId) {
+            navigator.clipboard.writeText(text).then(() => {
+                const el = document.getElementById(elementId);
+                // Hide copy icon and show checkmark
+                el.innerHTML = '<span class="copy-success">✔</span>';
+                el.style.border = 'none';
+                el.style.background = 'transparent';
+                el.style.pointerEvents = 'none'; // Prevent double clicking
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+
+        // === CLEAR HISTORY FUNCTION ===
+        function clearHistory(type) {
+            showPopup('Clear History', `Are you sure you want to delete all ${type} history? Active/Pending requests will NOT be deleted.`, true, () => {
+                const ref = database.ref(type);
+                ref.once('value', snapshot => {
+                    const updates = {};
+                    let count = 0;
+                    snapshot.forEach(child => {
+                        const val = child.val();
+                        // Only delete if status is NOT pending
+                        if (val.status !== 'pending') {
+                            updates[child.key] = null;
+                            count++;
+                        }
+                    });
+                    
+                    if(count > 0) {
+                        ref.update(updates).then(() => {
+                            showPopup('Success', `Cleared ${count} records from history.`);
+                            if(type === 'deposits') renderDeposits(false, null);
+                            else renderWithdrawals(false);
+                        });
+                    } else {
+                        showPopup('Info', 'No history records found to clear.');
+                    }
+                });
             });
         }
 
